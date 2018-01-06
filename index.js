@@ -1,17 +1,6 @@
-import {AppRegistry} from 'react-native';
-import {StackNavigator, TabNavigator} from 'react-navigation';
+import {AppRegistry } from 'react-native';
+import React from "react";
+import AppComponent from "./app/app";
+// import App from 'src/app'
 
-import Settings from "./app/components/Settings";
-import Home from "./app/components/Home";
-
-
-const home = StackNavigator({
-	Home: {screen: Home},
-});
-
-const App = TabNavigator({
-	Home: {screen: home},
-	Setting: {screen: Settings},
-});
-
-AppRegistry.registerComponent('GoTrackReact', () => App);
+AppRegistry.registerComponent('GoTrackReact', () => AppComponent);

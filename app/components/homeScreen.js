@@ -6,10 +6,10 @@ import {Device} from "react-native-ble-plx/src/Device";
 import {UUID} from "../ble/UUID";
 import SQLite from "react-native-sqlite-storage";
 
-export default class Home extends Component<{}> {
+export default class HomeScreen extends Component {
 	static navigationOptions = {
-		tabBarLabel: 'Home',
-		title: 'Home',
+		tabBarLabel: 'HomeScreen',
+		title: 'HomeScreen',
 		tabBarIcon: ({tintColor, focused}) => (
 			<Ionicons
 				name={focused ? 'ios-home' : 'ios-home-outline'}
@@ -42,13 +42,13 @@ export default class Home extends Component<{}> {
 	}
 
 	scanAndConnect() {
-		this.manager.startDeviceScan(null,
+		this.bleManager.startDeviceScan(null,
 			null, (error: ?Error, device: ?Device) => {
-				if (device.name !== "GoTrack - Prototype 1") {
+				if (!device || device.name !== "GoTrack - Prototype 1") {
 					return;
 				}
 
-				this.manager.stopDeviceScan();
+				this.bleManager.stopDeviceScan();
 
 				device.connect()
 					.then((device) => {
@@ -82,7 +82,6 @@ export default class Home extends Component<{}> {
 		const lastSessionId: string = "";
 
 		await device.writeCharacteristicWithResponseForService(UUID.CLIENT_SERVICE, UUID.CLIENT_LAST_SESSION, btoa(lastSessionId));
-
 
 
 	}

@@ -20,10 +20,10 @@ const instructions = Platform.select({
 	'Shake or press menu button for dev menu',
 });
 
-export default class Settings extends Component<{}> {
+export default class SettingsScreen extends Component {
 
 	static navigationOptions = {
-		tabBarLabel: 'Settings',
+		tabBarLabel: 'SettingsScreen',
 		tabBarIcon: ({ tintColor, focused }) => (
 			<Ionicons
 				name={focused ? 'ios-settings' : 'ios-settings-outline'}
@@ -35,7 +35,7 @@ export default class Settings extends Component<{}> {
 
 	constructor(props) {
 		super(props);
-		this.manager = new BleManager();
+		this.bleManager = new BleManager();
 		this.state = {info: "", values: {}};
 		// this.prefixUUID = "f000aa";
 		// this.suffixUUID = "-0451-4000-b000-000000000000";
@@ -87,7 +87,7 @@ export default class Settings extends Component<{}> {
 	}
 
 	scanAndConnect() {
-		this.manager.startDeviceScan(null,
+		this.bleManager.startDeviceScan(null,
 			null, (error: ?Error, scannedDevice: ?Device) => {
 
 
@@ -101,7 +101,7 @@ export default class Settings extends Component<{}> {
 
 				if (scannedDevice.name === "GoTrack - Prototype 1") {
 					console.log("connect");
-					this.manager.stopDeviceScan();
+					this.bleManager.stopDeviceScan();
 
 
 					scannedDevice.connect()
@@ -182,12 +182,12 @@ export default class Settings extends Component<{}> {
 	}
 
 	componentWillMount() {
-		const subscription = this.manager.onStateChange((state) => {
-			if (state === 'PoweredOn') {
-				this.scanAndConnect();
-				subscription.remove();
-			}
-		}, true);
+		// const subscription = this.bleManager.onStateChange((state) => {
+		// 	if (state === 'PoweredOn') {
+		// 		this.scanAndConnect();
+		// 		subscription.remove();
+		// 	}
+		// }, true);
 	}
 }
 

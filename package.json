@@ -7,6 +7,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@types/react": "^16.0.34",
     "es6-enum": "^1.1.0",
     "global": "^4.3.2",
     "react": "16.0.0",
@@ -15,6 +16,10 @@
     "react-native-sqlite-storage": "^3.3.4",
     "react-native-vector-icons": "^4.4.3",
     "react-navigation": "^1.0.0-beta.22",
+    "react-redux": "^5.0.6",
+    "redux": "^3.7.2",
+    "redux-api": "^0.11.2",
+    "redux-devtools": "^3.4.1",
     "rnpm": "^1.9.0",
     "xcode": "^1.0.0"
   },
