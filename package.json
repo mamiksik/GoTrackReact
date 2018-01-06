@@ -1,5 +1,5 @@
 {
-  "name": "GoTrackReact",
+  "name": "GoTrack",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -7,10 +7,29 @@
     "test": "jest"
   },
   "dependencies": {
+    "es6-enum": "^1.1.0",
+    "global": "^4.3.2",
     "react": "16.0.0",
-    "react-native": "0.51.0"
+    "react-native": "0.51.0",
+    "react-native-ble-plx": "^0.7.0",
+    "react-native-sqlite-storage": "^3.3.4",
+    "react-native-vector-icons": "^4.4.3",
+    "react-navigation": "^1.0.0-beta.22",
+    "rnpm": "^1.9.0",
+    "xcode": "^1.0.0"
+  },
+  "devDependencies": {
+    "babel-jest": "22.0.4",
+    "babel-preset-es2017": "^6.24.1",
+    "babel-preset-react-native": "4.0.0",
+    "jest": "22.0.4",
+    "react-test-renderer": "16.0.0"
   },
   "jest": {
     "preset": "react-native"
-  }
+  },
+  "main": "index.js",
+  "license": "MIT",
+  "repository": "https://github.com/mamiksik/GoTrackReact.git",
+  "author": "Martin Miksik <mamiksik@gmail.com>"
 }
