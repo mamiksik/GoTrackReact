@@ -5,6 +5,7 @@ import {BleManager} from "react-native-ble-plx";
 import {Device} from "react-native-ble-plx/src/Device";
 import {UUID} from "../ble/UUID";
 import SQLite from "react-native-sqlite-storage";
+import {connect} from "react-redux";
 
 export default class HomeScreen extends Component {
 	static navigationOptions = {
@@ -86,6 +87,14 @@ export default class HomeScreen extends Component {
 
 	}
 }
+
+// const mapStateToProps = (state) => {
+// 	return {
+// 		navigationState: state.Home
+// 	}
+// };
+
+// export default connect(mapStateToProps)(HomeScreen)
 
 const styles = StyleSheet.create({
 	container: {

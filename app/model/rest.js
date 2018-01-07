@@ -16,7 +16,7 @@
 // 				return {
 // 					name: item.name,
 // 					fullName: item.full_name,
-// 					user: item.owner.login
+// 					user: item.owner.auth
 // 				};
 // 			});
 // 		}
