@@ -1,42 +1,44 @@
-import HomeScreen from "./components/HomeScreen";
-import {addNavigationHelpers, StackNavigator, TabNavigator, withNavigation} from "react-navigation";
-
 import React from "react";
-import {Linking} from "react-native";
-import LoginScreen from "./components/LoginScreen";
-import SettingsScreen from "./components/SettingsScreen";
+import {StackNavigator, TabNavigator, withNavigation} from "react-navigation";
+
+
 import {applyMiddleware, combineReducers, createStore} from "redux";
-import { composeWithDevTools } from 'redux-devtools-extension';
+import {composeWithDevTools} from 'redux-devtools-extension';
 import {connect, Provider} from "react-redux";
 
-import queryString from 'query-string';
+//Screens
+import HomeScreen from "./components/HomeScreen";
+import SettingsScreen from "./components/SettingsScreen";
+import LoginScreen from "./components/LoginScreen";
 
+//Services
+import {loginService} from "./services/AuthService";
+import {logsService} from "./services/LogsService";
+
+//Reducers
 import {authReducer} from "./reducers/AuthReducer";
-import {loginService} from "./api/LoginService";
-import {logsService} from "./api/LogsService";
 import {logsReducer} from "./reducers/LogsReducer";
+import {sessionReducer} from "./reducers/SessionReducer";
+
 
 //
 // Navigation
 //
-
-// const Home = StackNavigator({
-// 	Home: {screen: HomeScreen}
-// });
 
 const Tabs = TabNavigator({
 	Home: {screen: HomeScreen},
 	Setting: {screen: SettingsScreen},
 });
 
-//
-// Settings
-//
 
+//
+// Redux
+//
 
 const appReducer = combineReducers({
 	auth: authReducer,
 	logs: logsReducer,
+	session: sessionReducer,
 });
 
 
@@ -44,8 +46,12 @@ const store = createStore(appReducer, composeWithDevTools(
 	applyMiddleware(loginService),
 	applyMiddleware(logsService),
 ));
-
 window.store = store;
+
+
+//
+// Auth
+//
 
 @connect((state) => {
 	return {
@@ -61,26 +67,13 @@ class AuthComponent extends React.Component {
 		this.props.dispatch({type: "GET_REST_TOKEN"});
 	}
 
-	componentDidMount() {
-		// this.props.store.dispatch({type: "GET_REST_TOKEN"});
-		// Linking.addEventListener('url', this._handleOpenURL);
-	}
-
-	componentWillUnmount() {
-		// Linking.removeEventListener('url', this._handleOpenURL);
-	}
-	                                                                  s
-	_handleOpenURL(event) {
-		const params = queryString.parse(event.url);
-		// this.props.store.dispatch({type: "SET_REFRESH_TOKEN_URL", url: params[0]});
-		// this.props.store.dispatch({type: "LOGIN"});
-	}
-
 	render() {
 		if (this.props.auth.isLoggedIn) {
 			return (<Tabs/>)
+			/*return (<LoginScreen/>)*/
 		} else {
-			return (<LoginScreen />)
+			return (<Tabs/>)
+			/*return (<LoginScreen/>)*/
 		}
 	}
 }
@@ -97,12 +90,4 @@ class AppComponent extends React.Component {
 	}
 }
 
-
 export default AppComponent;
-/*= () => {
-   return (
-	   <Provider store={store}>
-		   <AuthComponent/>
-	   </Provider>
-   );
-};*/

@@ -39,17 +39,3 @@ export default class LoginScreen extends Component {
 		this.props.dispatch({type: 'GET_REST_TOKEN'});
 	}
 }
-
-// const mapStateToProps = (state) => {
-// 	return {
-// 		navigationState: state.Login
-// 	}
-// };
-//
-//  connect(mapStateToProps)(LoginScreen)
-
-// {/*<Button onPress={ () => { this.redirectToAuth() } }*/}
-// {/*title="Learn More"*/}
-// {/*color="#841584"*/}
-// {/*accessibilityLabel="Redirect to auth page">Login</Button>*/}
-// {/*<Text>Test</Text>*/}
