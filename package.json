@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@types/react": "^16.0.34",
+    "autobind-decorator": "^2.1.0",
     "es6-enum": "^1.1.0",
     "global": "^4.3.2",
     "prop-types": "^15.6.0",

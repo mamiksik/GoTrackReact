@@ -1,23 +1,27 @@
 //GoTrackReact://?loginToken=__TOKEN__
 
 export interface TrackData {
-	gyroscope: {
-		x: number,
-		y: number,
-		z: number,
+	value: {
+		gyroscope: {
+			x: number,
+			y: number,
+			z: number,
+		},
+		magnetometer: {
+			x: number,
+			y: number,
+			z: number,
+		},
+		accelerometer: {
+			x: number,
+			y: number,
+			z: number,
+		},
+
+		pressure: number,
+		timestamp: number,
 	},
-	magnetometer: {
-		x: number,
-		y: number,
-		z: number,
-	},
-	accelerometer: {
-		x: number,
-		y: number,
-		z: number,
-	},
-	pressure: number,
-	timestamp: number,
+	key: number,
 }
 
 const initState: [TrackData] = [];
@@ -30,6 +34,5 @@ export const sessionReducer = (state = initState, action) => {
 			];
 		default:
 			return state;
-
 	}
 };
