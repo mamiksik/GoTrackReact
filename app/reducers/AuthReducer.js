@@ -11,13 +11,20 @@ export interface AuthState {
 const initAuthState: AuthState = {
 	isLoggedIn: false,
 	restToken: "",
+	loginToken: "",
 	apiUrl: "",
-	refreshTokenUrl: "http://martin.local/GoClimb/www/gotrack/en/token",
-	authUrl: "http://martin.local/GoClimb/www/auth/cs/go_track/login?back=http%3A%2F%2Fmartin.local%2FGoClimb%2Fwww%2Fgotrack%2Fcs%2F%3FloginToken%3D__TOKEN__",
+	tokenURL: "http://martin.local/GoClimb/www/gotrack/en",
+	authURL: "http://martin.local/GoClimb/www/auth/cs/go_track/login?back=http%3A%2F%2Fmartin.local%2FGoClimb%2Fwww%2Fgotrack%2Fcs%2F%3FloginToken%3D__TOKEN__",
 };
 
 export const authReducer = (state = initAuthState, action) => {
 	switch (action.type) {
+		case 'SET_LOGIN_TOKEN': {
+			return {
+				...state,
+				loginToken: action.data
+			};
+		}
 		case 'GET_REST_TOKEN_ERROR':
 			return {
 				...state,
@@ -34,6 +41,16 @@ export const authReducer = (state = initAuthState, action) => {
 			} else {
 				return state;
 			}
+		case 'SET_API_URL_MARTIN':
+			return {
+				...state,
+				apiUrl: "http://martin.local/GoClimb/www/api/en/v1/",
+			};
+		case 'SET_API_URL_PROXY':
+			return {
+				...state,
+				apiUrl: "http://localhost.charlesproxy.com/GoClimb/www/api/en/v1/",
+			};
 		default:
 			return state;
 

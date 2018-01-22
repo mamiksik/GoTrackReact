@@ -10,7 +10,7 @@ export class Utils {
 		const token = auth.restToken ? divider + 'token=' + auth.restToken : '';
 
 		const final = auth.apiUrl + route + token;
-		// console.log(final);
+		console.log(final);
 
 		return final;
 	}

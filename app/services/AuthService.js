@@ -1,30 +1,31 @@
-import request from 'superagent'
+import * as axios from "axios";
 
 export const loginService = store => next => action => {
 	next(action);
 
-	const loginUrl = store.getState().auth.refreshTokenUrl;
+
+	const tokenURL = store.getState().auth.tokenURL + "?loginToken=" + store.getState().auth.loginToken;
 	switch (action.type) {
 		case 'GET_REST_TOKEN':
-			request
-				.get( loginUrl )
-				.end((err, res) => {
-					if (err) {
-						/*
-						in case there is any error, dispatch an action containing the error
-						*/
-						return next({
-							type: 'GET_REST_TOKEN_ERROR',
-							err
-						})
-					}
 
-					const data = JSON.parse(res.text).data;
-					next({
-						type: 'GET_REST_TOKEN_RECEIVED',
-						data: data
-					})
-				});
+			let instance = axios.create({
+				withCredentials: true,
+				credentials: 'include',
+
+			});
+
+			instance.get(tokenURL).then((response) => {
+				next({
+					type: 'GET_REST_TOKEN_RECEIVED',
+					data: response.data.data
+				})
+			}).catch((error) => {
+				console.log(error);
+				return next({
+					type: 'GET_REST_TOKEN_ERROR',
+					error
+				})
+			});
 			break;
 		default:
 			break;

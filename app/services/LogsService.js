@@ -4,8 +4,8 @@ import {Utils} from "../Utils";
 export const logsService = store => next => action => {
 	next(action);
 
-	console.log(store);
-	console.log(Utils.getUrl('logs/', store));
+	// console.log(store);
+	// console.log(Utils.getUrl('logs/', store));
 	switch (action.type) {
 		case 'GET_LOGS':
 			request

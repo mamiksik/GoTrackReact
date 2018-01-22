@@ -8,7 +8,7 @@ import SQLite from "react-native-sqlite-storage";
 import {connect} from "react-redux";
 import {Characteristic} from "react-native-ble-plx/src/Characteristic";
 import autobind from "autobind-decorator"
-import type {TrackData} from "../reducers/SessionReducer";
+import type {Session, TrackData} from "../reducers/SessionReducer";
 import type {Base64} from "react-native-ble-plx/src/TypeDefinition";
 
 
@@ -76,7 +76,8 @@ export default class HomeScreen extends Component {
 				<Text style={styles.status}>Gyro: {this.state.char[2]}</Text>
 				<Text style={styles.status}>Magnetometer: {this.state.char[3]}</Text>
 
-				<Button onPress={this.sync} title="asd">Sync</Button>
+				<Button onPress={this.sync} title="Sync">Sync</Button>
+				<Button onPress={this.upload} title="Upload">Sync</Button>
 			</View>
 		);
 	}
@@ -91,7 +92,13 @@ export default class HomeScreen extends Component {
 	}
 
 	@autobind
+	upload() {
+		this.state.dispatch({type: 'POST_SESSIONS'});
+	}
+
+	@autobind
 	async sync() {
+		console.log(this.state.device);
 		if (this.state.device) {
 			const dateTime = Date.now();
 			const timestamp = Math.floor(dateTime / 1000);
@@ -121,61 +128,81 @@ export default class HomeScreen extends Component {
 					return;
 				}
 
-				let trackerData: TrackData = {
-					key: atob(characteristic.value),
-					value: {}
-				};
+				let info = atob(characteristic.value).split(",");
+
+				// let trackerData: TrackData = {
+				// 	key: info[0],
+				// 	time: info[1]
+				//
+				// };
+
+				// let session: Session = {
+				// 	sessionId: info[0],
+				// data: {
+				// timestamp: info[1]
+				// },
+				// };
+				const sessionId = info[0];
 
 				let acc = device.readCharacteristicForService(UUID.sensors.uuid, UUID.sensors.acc);
 				let baro = device.readCharacteristicForService(UUID.sensors.uuid, UUID.sensors.baro);
 				let gyro = device.readCharacteristicForService(UUID.sensors.uuid, UUID.sensors.gyro);
 				let mag = device.readCharacteristicForService(UUID.sensors.uuid, UUID.sensors.mag);
 
-				Promise.all([acc, baro, gyro, mag]).then((data) => {
-
-
-					console.log(data);
-
-					if (data[0].value === null) {
+				Promise.all([acc, baro, gyro, mag]).then((characteristics) => {
+					if (characteristics[0].value === null) {
 						return;
 					}
 
-					let acc = atob(data[0].value).split(",");
-					let baro = atob(data[1].value).split(",");
-					let gyro = atob(data[2].value).split(",");
-					let mag = atob(data[3].value).split(",");
-
-					console.log(acc);
-					console.log(acc);
-					console.log(acc);
-					console.log(baro);
-					console.log(gyro);
-					console.log(mag);
+					let acc = atob(characteristics[0].value).split(",");
+					let baro = atob(characteristics[1].value).split(",");
+					let gyro = atob(characteristics[2].value).split(",");
+					let mag = atob(characteristics[3].value).split(",");
 
 					//Parse regex
-					trackerData.value = {
-						acc: {
-							x: acc[0],
-							y: acc[1],
-							z: acc[2],
-						},
+					// trackerData = {
+					// 	...trackerData,
+					// 	acc: {
+					// 		x: acc[0],
+					// 		y: acc[1],
+					// 		z: acc[2],
+					// 	},
+					// 	pressure: baro[0],
+					// 	temperature: baro[1],
+					// 	gyro: {
+					// 		x: gyro[0],
+					// 		y: gyro[1],
+					// 		z: gyro[2],
+					// 	},
+					// 	mag: {
+					// 		x: mag[0],
+					// 		y: mag[1],
+					// 		z: mag[2],
+					// 	},
+					// };
+
+					const data = {
+						// ....data,
+						accelerometerX: acc[0],
+						accelerometerY: acc[1],
+						accelerometerZ: acc[2],
+
+						gyroscopeX: gyro[0],
+						gyroscopeY: gyro[1],
+						gyroscopeZ: gyro[2],
+
+						magnetometerX: mag[0],
+						magnetometerY: mag[1],
+						magnetometerZ: mag[2],
+
+
 						pressure: baro[0],
-						temperature: baro[1],
-						gyro: {
-							x: gyro[0],
-							y: gyro[1],
-							z: gyro[2],
-						},
-						mag: {
-							x: mag[0],
-							y: mag[1],
-							z: mag[2],
-						},
+						timestamp: baro[1],
 					};
 
-					console.log(trackerData);
+					// console.log(session);
 
-					this.props.dispatch({type: 'ADD_SESSION', data: trackerData});
+					this.props.dispatch({type: 'ADD_SESSION', data: data, sessionId: sessionId});
 
 				}).catch((error) => {
 					console.log(error);
@@ -199,6 +226,7 @@ export default class HomeScreen extends Component {
 				device.connect()
 					.then((device) => {
 						this.state.device = device;
+
 						console.log("Discovering services and characteristics");
 						return device.discoverAllServicesAndCharacteristics();
 					})

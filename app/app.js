@@ -5,6 +5,8 @@ import {StackNavigator, TabNavigator, withNavigation} from "react-navigation";
 import {applyMiddleware, combineReducers, createStore} from "redux";
 import {composeWithDevTools} from 'redux-devtools-extension';
 import {connect, Provider} from "react-redux";
+import {persistStore, persistReducer} from 'redux-persist'
+import storage from 'redux-persist/lib/storage'
 
 //Screens
 import HomeScreen from "./components/HomeScreen";
@@ -19,7 +21,18 @@ import {logsService} from "./services/LogsService";
 import {authReducer} from "./reducers/AuthReducer";
 import {logsReducer} from "./reducers/LogsReducer";
 import {sessionReducer} from "./reducers/SessionReducer";
+import {PersistGate} from "redux-persist/es/integration/react";
+import {sessionService} from "./services/SessionService";
 
+function console(target, name, descriptor) {
+	let fn = descriptor.value;
+	console.log(descriptor);
+
+	window.console = {
+		...window.console,
+		fn
+	};
+}
 
 //
 // Navigation
@@ -41,13 +54,26 @@ const appReducer = combineReducers({
 	session: sessionReducer,
 });
 
+const persistConfig = {
+	key: 'root',
+	storage: storage,
+};
+const persistedReducer = persistReducer(persistConfig, appReducer);
 
-const store = createStore(appReducer, composeWithDevTools(
+// @console
+export const  store = createStore(persistedReducer, composeWithDevTools(
 	applyMiddleware(loginService),
 	applyMiddleware(logsService),
+	applyMiddleware(sessionService),
 ));
+
 window.store = store;
 
+// @console
+// let persistor = persistStore(store);
+// window.persistor = persistor;
+
+// persistor.purge();
 
 //
 // Auth
@@ -72,8 +98,8 @@ class AuthComponent extends React.Component {
 			return (<Tabs/>)
 			/*return (<LoginScreen/>)*/
 		} else {
-			return (<Tabs/>)
-			/*return (<LoginScreen/>)*/
+			// return (<Tabs/>)
+			return (<LoginScreen/>)
 		}
 	}
 }
@@ -84,7 +110,9 @@ class AppComponent extends React.Component {
 		const Stack = StackNavigator({AuthComponent: {screen: AuthComponent}});
 		return (
 			<Provider store={store}>
-				<Stack/>
+				{/*<PersistGate persistor={persistor}>*/}
+					<Stack/>
+				{/*</PersistGate>*/}
 			</Provider>
 		)
 	}
