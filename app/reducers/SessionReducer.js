@@ -44,7 +44,7 @@ const initState/*: { sessionId: [] }*/ = {};
 
 export const sessionReducer = (state = initState, action) => {
 	// console.log(state);
-	console.log(action);
+	// console.log(action);
 	const {type, data, sessionId} = action;
 	switch (type) {
 		case 'ADD_SESSION':
@@ -58,9 +58,12 @@ export const sessionReducer = (state = initState, action) => {
 			let newState = {...state};
 			if (state.hasOwnProperty(sessionId)) {
 				// newState[sessionId] = {}
-				newState[sessionId] = [...state[sessionId], data];
+				newState[sessionId].data = [...state[sessionId].data, data];
 			} else {
-				newState[sessionId] = [data];
+				newState[sessionId] = {
+					sessionId: sessionId,
+					data: [data]
+				};
 
 			}
 

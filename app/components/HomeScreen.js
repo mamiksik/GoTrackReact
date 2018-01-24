@@ -93,7 +93,7 @@ export default class HomeScreen extends Component {
 
 	@autobind
 	upload() {
-		this.state.dispatch({type: 'POST_SESSIONS'});
+		this.props.dispatch({type: 'POST_SESSIONS'});
 	}
 
 	@autobind
@@ -116,32 +116,20 @@ export default class HomeScreen extends Component {
 
 			await device.writeCharacteristicWithResponseForService(UUID.client.uuid, UUID.client.sync, max);
 
-			const monitor = device.monitorCharacteristicForService(UUID.sensors.uuid, UUID.sensors.info, (error: ?Error, characteristic: ?Characteristic) => {
+			let sub = device.monitorCharacteristicForService(UUID.sensors.uuid, UUID.sensors.info, (error: ?Error, characteristic: ?Characteristic) => {
 				// console.log(error);
-				console.log(characteristic);
+				// console.log(characteristic);
 				console.log(atob(characteristic.value));
 				// console.log(atob(characteristic.value));
 
-				if (characteristic.value === "") {
-					monitor.unsubscribe();
+				if (atob(characteristic.value) === "==TRANSMISSION_END==") {
+					sub.remove();
+					sub = null;
 					console.log("Synced!");
 					return;
 				}
 
 				let info = atob(characteristic.value).split(",");
-
-				// let trackerData: TrackData = {
-				// 	key: info[0],
-				// 	time: info[1]
-				//
-				// };
-
-				// let session: Session = {
-				// 	sessionId: info[0],
-				// data: {
-				// timestamp: info[1]
-				// },
-				// };
 				const sessionId = info[0];
 
 				let acc = device.readCharacteristicForService(UUID.sensors.uuid, UUID.sensors.acc);
@@ -159,33 +147,12 @@ export default class HomeScreen extends Component {
 					let gyro = atob(characteristics[2].value).split(",");
 					let mag = atob(characteristics[3].value).split(",");
 
-					//Parse regex
-					// trackerData = {
-					// 	...trackerData,
-					// 	acc: {
-					// 		x: acc[0],
-					// 		y: acc[1],
-					// 		z: acc[2],
-					// 	},
-					// 	pressure: baro[0],
-					// 	temperature: baro[1],
-					// 	gyro: {
-					// 		x: gyro[0],
-					// 		y: gyro[1],
-					// 		z: gyro[2],
-					// 	},
-					// 	mag: {
-					// 		x: mag[0],
-					// 		y: mag[1],
-					// 		z: mag[2],
-					// 	},
-					// };
-
 					const data = {
 						// ....data,
 						accelerometerX: acc[0],
 						accelerometerY: acc[1],
 						accelerometerZ: acc[2],
+						// accelerometerO: acc[2],
 
 						gyroscopeX: gyro[0],
 						gyroscopeY: gyro[1],
@@ -197,7 +164,9 @@ export default class HomeScreen extends Component {
 
 
 						pressure: baro[0],
-						timestamp: baro[1],
+						temperature: baro[1],
+
+						timestamp: info[1],
 					};
 
 					// console.log(session);

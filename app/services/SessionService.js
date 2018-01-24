@@ -6,11 +6,11 @@ import {TrackData} from "../reducers/SessionReducer";
 export const sessionService = store => next => action => {
 	next(action);
 
-	console.log(store);
-	console.log(Utils.getUrl('session/', store));
+	// console.log(store);
+	// console.log(Utils.getUrl('session/', store));
 
 	const state: [TrackData] = store.getState().session;
-	console.log(state);
+	// console.log(state);
 
 	switch (action.type) {
 		case 'POST_SESSIONS':

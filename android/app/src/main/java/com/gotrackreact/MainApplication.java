@@ -3,6 +3,7 @@ package com.gotrackreact;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.airbnb.android.react.lottie.LottiePackage;
 import com.psykar.cookiemanager.CookieManagerPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.polidea.reactnativeble.BlePackage;
@@ -26,6 +27,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new LottiePackage(),
             new CookieManagerPackage(),
             new VectorIconsPackage(),
             new BlePackage()

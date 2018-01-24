@@ -70,8 +70,8 @@ export const  store = createStore(persistedReducer, composeWithDevTools(
 window.store = store;
 
 // @console
-// let persistor = persistStore(store);
-// window.persistor = persistor;
+let persistor = persistStore(store);
+window.persistor = persistor;
 
 // persistor.purge();
 
@@ -110,9 +110,9 @@ class AppComponent extends React.Component {
 		const Stack = StackNavigator({AuthComponent: {screen: AuthComponent}});
 		return (
 			<Provider store={store}>
-				{/*<PersistGate persistor={persistor}>*/}
+				<PersistGate persistor={persistor}>
 					<Stack/>
-				{/*</PersistGate>*/}
+				</PersistGate>
 			</Provider>
 		)
 	}
