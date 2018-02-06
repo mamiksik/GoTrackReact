@@ -1,7 +1,10 @@
 import {Store} from 'redux'
 import {AuthState} from "./reducers/AuthReducer";
 
+
 export class Utils {
+
+
 	static getUrl(route: string, store: Store) {
 		const auth: AuthState = store.getState().auth;
 		// console.log(auth);
@@ -13,5 +16,9 @@ export class Utils {
 		console.log(final);
 
 		return final;
+	}
+
+	static getColour(id: number){
+
 	}
 }

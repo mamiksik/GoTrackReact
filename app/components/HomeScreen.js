@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, StyleSheet, Text, View} from "react-native";
+import {StyleSheet, View} from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import {BleManager} from "react-native-ble-plx";
 import {Device} from "react-native-ble-plx/src/Device";
@@ -11,6 +11,14 @@ import autobind from "autobind-decorator"
 import type {Session, TrackData} from "../reducers/SessionReducer";
 import type {Base64} from "react-native-ble-plx/src/TypeDefinition";
 
+import {Container, Header, Content, Text, Button} from 'native-base';
+// import Container, Header, Content, Button, Text from 'native-base';
+
+// import { Button } from 'native-base';
+
+import Animation from 'lottie-react-native';
+import anim from './../assets/loading.json';
+// import anim from './../assets/loader_animation.json';
 
 const UUID = {
 	client: {
@@ -34,17 +42,17 @@ const UUID = {
 	};
 })
 export default class HomeScreen extends Component {
-	static navigationOptions = {
-		tabBarLabel: 'Home',
-		title: 'Home',
-		tabBarIcon: ({tintColor, focused}) => (
-			<Ionicons
-				name={focused ? 'ios-home' : 'ios-home-outline'}
-				size={26}
-				style={{color: tintColor}}
-			/>
-		),
-	};
+	// static navigationOptions = {
+	// 	tabBarLabel: 'Home',
+	// 	title: 'Home',
+	// 	tabBarIcon: ({tintColor, focused}) => (
+	// 		<Ionicons
+	// 			name={focused ? 'ios-home' : 'ios-home-outline'}
+	// 			size={26}
+	// 			style={{color: tintColor}}
+	// 		/>
+	// 	),
+	// };
 
 	constructor(props) {
 		super(props);
@@ -70,16 +78,43 @@ export default class HomeScreen extends Component {
 	render() {
 		return (
 			<View style={styles.container}>
-				<Text style={styles.status}>{this.state.task}</Text>
-				<Text style={styles.status}>Acelerometer: {this.state.char[0]}</Text>
-				<Text style={styles.status}>Baro: {this.state.char[1]}</Text>
-				<Text style={styles.status}>Gyro: {this.state.char[2]}</Text>
-				<Text style={styles.status}>Magnetometer: {this.state.char[3]}</Text>
+				{/*<Text style={styles.status}>{this.state.task}</Text>*/}
+				{/*<Text style={styles.status}>Acelerometer: {this.state.char[0]}</Text>*/}
+				{/*<Text style={styles.status}>Baro: {this.state.char[1]}</Text>*/}
+				{/*<Text style={styles.status}>Gyro: {this.state.char[2]}</Text>*/}
+				{/*<Text style={styles.status}>Magnetometer: {this.state.char[3]}</Text>*/}
 
-				<Button onPress={this.sync} title="Sync">Sync</Button>
-				<Button onPress={this.upload} title="Upload">Sync</Button>
+				{/*<Button onPress={this.sync} title="Sync">Sync</Button>*/}
+				{/*<Button onPress={this.upload} title="Upload">Sync</Button>*/}
+				<View>
+					<Animation
+						ref={animation => {
+							this.animation = animation;
+						}}
+						style={{
+							// flex: 1,
+							height: 100,
+							width: 100,
+
+							padding: 0,
+							margin: 0,
+						}}
+
+						loop={true}
+						// style={{ }}
+						source={anim}
+					/>
+				</View>
+
+				<Button block>
+					<Text>Light</Text>
+				</Button>
 			</View>
 		);
+	}
+
+	componentDidMount() {
+		this.animation.play();
 	}
 
 	componentWillMount() {
@@ -274,11 +309,11 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
-		backgroundColor: '#F5FCFF',
+		// backgroundColor: '#F5FCFF',
 	},
-	status: {
-		fontSize: 16,
-		textAlign: 'center',
-		margin: 10,
-	},
+	// status: {
+	// 	fontSize: 16,
+	// 	textAlign: 'center',
+	// 	margin: 10,
+	// },
 });

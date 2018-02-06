@@ -7,6 +7,7 @@ import {composeWithDevTools} from 'redux-devtools-extension';
 import {connect, Provider} from "react-redux";
 import {persistStore, persistReducer} from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
+// import {FooterTab} from "native-base";
 
 //Screens
 import HomeScreen from "./components/HomeScreen";
@@ -23,6 +24,17 @@ import {logsReducer} from "./reducers/LogsReducer";
 import {sessionReducer} from "./reducers/SessionReducer";
 import {PersistGate} from "redux-persist/es/integration/react";
 import {sessionService} from "./services/SessionService";
+import Ionicons from "react-native-vector-icons/Ionicons";
+
+// import {Footer, FooterTab, Item} from "native-base";
+
+// import {TabBarBottom} from 'react-navigation-native-base';
+
+import {TabBarBottom} from 'react-navigation-native-base';
+import {StyleSheet} from "react-native";
+import {Container, StyleProvider} from "native-base";
+
+// import variable from "native-base/dist/src/theme/variables/platform";
 
 function console(target, name, descriptor) {
 	let fn = descriptor.value;
@@ -39,9 +51,25 @@ function console(target, name, descriptor) {
 //
 
 const Tabs = TabNavigator({
-	Home: {screen: HomeScreen},
-	Setting: {screen: SettingsScreen},
-});
+		Home: {
+			screen: HomeScreen,
+			navigationOptions: {
+				title: 'Home',
+				tabBarIcon: ({tintColor, focused}) => (
+					<Ionicons
+						name={focused ? 'ios-home' : 'ios-home-outline'}
+						size={26}
+						style={{color: tintColor}}
+					/>
+				),
+			}
+		},
+		Setting: {screen: SettingsScreen},
+	}, {
+		tabBarComponent: props => <TabBarBottom {...props} />,
+		// style: styles,
+	}
+);
 
 
 //
@@ -61,7 +89,7 @@ const persistConfig = {
 const persistedReducer = persistReducer(persistConfig, appReducer);
 
 // @console
-export const  store = createStore(persistedReducer, composeWithDevTools(
+export const store = createStore(persistedReducer, composeWithDevTools(
 	applyMiddleware(loginService),
 	applyMiddleware(logsService),
 	applyMiddleware(sessionService),
@@ -95,8 +123,11 @@ class AuthComponent extends React.Component {
 
 	render() {
 		if (this.props.auth.isLoggedIn) {
-			return (<Tabs/>)
-			/*return (<LoginScreen/>)*/
+			return (
+				<Container>
+					<Tabs/>
+				</Container>
+			)
 		} else {
 			// return (<Tabs/>)
 			return (<LoginScreen/>)
