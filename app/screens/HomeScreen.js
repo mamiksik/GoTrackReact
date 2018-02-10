@@ -200,16 +200,11 @@ export default class HomeScreen extends Component {
 						timestamp: info[1],
 					};
 
-
-
-					// console.log(session);
-
-
 					this.setState({logNumber: sessionId});
 					this.props.dispatch({type: 'ADD_SESSION', data: data, sessionId: sessionId});
 
 				}).catch((error) => {
-					// this.setState({isSyncing: false});
+					this.setState({isSyncing: false});
 					console.log(error);
 				});
 			});

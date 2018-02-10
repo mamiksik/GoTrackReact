@@ -1,6 +1,16 @@
 import {AppRegistry, NativeModules} from 'react-native';
-import React from "react";
 import AppComponent from "./app/app";
+
+import Reactotron from 'reactotron-react-native'
+import { reactotronRedux } from 'reactotron-redux'
+
+Reactotron.configure({host:'martin.local'});
+Reactotron.useReactNative({asyncStorage: { ignore: ['secret'] }});
+Reactotron.use(reactotronRedux());
+
+Reactotron.connect();
+
+console.tron = Reactotron;
 
 global.XMLHttpRequest = global.originalXMLHttpRequest ?
 	global.originalXMLHttpRequest :

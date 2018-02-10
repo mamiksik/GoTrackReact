@@ -1,5 +1,8 @@
 import {applyMiddleware, combineReducers, createStore} from "redux";
-import {composeWithDevTools} from "redux-devtools-extension";
+// import  Reactotron from 'reactotron-redux'
+import Reactotron from 'reactotron-react-native'
+import { composeWithDevTools } from 'remote-redux-devtools';
+// import {composeWithDevTools} from "redux-devtools-extension";
 
 import {persistReducer, persistStore} from "redux-persist";
 import storage from 'redux-persist/lib/storage'
@@ -25,7 +28,7 @@ const persistConfig = {
 };
 const persistedReducer = persistReducer(persistConfig, appReducer);
 
-export const store = createStore(persistedReducer, composeWithDevTools(
+export const store = createStore(persistedReducer,  undefined, composeWithDevTools(
 	applyMiddleware(loginService),
 	applyMiddleware(logsService),
 	applyMiddleware(sessionService),
