@@ -10,7 +10,6 @@ global.FormData = global.originalFormData ?
 	global.FormData;
 
 if (__DEV__) {
-
 	NativeModules.DevSettings.setIsDebuggingRemotely(true)
 }
 

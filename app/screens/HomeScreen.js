@@ -11,13 +11,13 @@ import autobind from "autobind-decorator"
 import type {Session, TrackData} from "../reducers/SessionReducer";
 import type {Base64} from "react-native-ble-plx/src/TypeDefinition";
 
-import {Container, Header, Content, Text, Button} from 'native-base';
+import {Container, Header, Content, Text, Button, Body} from 'native-base';
 // import Container, Header, Content, Button, Text from 'native-base';
 
 // import { Button } from 'native-base';
 
 import Animation from 'lottie-react-native';
-import anim from './../assets/loading.json';
+// import anim from './../assets/loading.json';
 // import anim from './../assets/loader_animation.json';
 
 const UUID = {
@@ -33,6 +33,7 @@ const UUID = {
 		gyro: "9036ca89-2ad3-46f0-a9c1-7b6811fe2bd3",
 		mag: "9036ca89-2ad3-46f0-a9c1-7b6811fe2bd4",
 		info: "9036ca89-2ad3-46f0-a9c1-7b6811fe2bd5",
+		bus: "9036ca89-2ad3-46f0-a9c1-7b6811fe2bd6",
 	}
 };
 
@@ -42,23 +43,13 @@ const UUID = {
 	};
 })
 export default class HomeScreen extends Component {
-	// static navigationOptions = {
-	// 	tabBarLabel: 'Home',
-	// 	title: 'Home',
-	// 	tabBarIcon: ({tintColor, focused}) => (
-	// 		<Ionicons
-	// 			name={focused ? 'ios-home' : 'ios-home-outline'}
-	// 			size={26}
-	// 			style={{color: tintColor}}
-	// 		/>
-	// 	),
-	// };
+	static navigationOptions = {
+		title: 'Home',
+	};
 
 	constructor(props) {
 		super(props);
 		this.bleManager = new BleManager();
-		console.log(atob("IDgsMTc="));
-		console.log(atob(atob("SURFMkxERTI=")));
 
 		this.state = {
 			...this.state,
@@ -70,54 +61,52 @@ export default class HomeScreen extends Component {
 				gyro = "",
 				mag = "",
 			],
-			device: null,
+
+			isReady: false,
+			isSyncing: false,
+			logNumber: "",
 		};
 
 	}
 
 	render() {
+
+		let state = null;
+		let button = null;
+
+		if (!this.state.isSyncing) {
+
+			if (this.state.device == null) {
+				state = "Searching for GoTrack";
+			} else if (this.state.device.isConnected) {
+				state = "Now you can sync device";
+			}
+
+			if (this.state.isReady){
+				button = <Button block onPress={this.sync}><Text>Sync</Text></Button>
+			}
+
+		} else {
+			state = "Syncing! " + this.state.logNumber;
+		}
+
+
+
 		return (
-			<View style={styles.container}>
-				{/*<Text style={styles.status}>{this.state.task}</Text>*/}
-				{/*<Text style={styles.status}>Acelerometer: {this.state.char[0]}</Text>*/}
-				{/*<Text style={styles.status}>Baro: {this.state.char[1]}</Text>*/}
-				{/*<Text style={styles.status}>Gyro: {this.state.char[2]}</Text>*/}
-				{/*<Text style={styles.status}>Magnetometer: {this.state.char[3]}</Text>*/}
+			<Container>
+				<Header title="Home"></Header>
+				<Body>
+					<Text>{state}</Text>
+					{button}
+					<Button block onPress={this.upload}><Text>Upload</Text></Button>
 
-				{/*<Button onPress={this.sync} title="Sync">Sync</Button>*/}
-				{/*<Button onPress={this.upload} title="Upload">Sync</Button>*/}
-				<View>
-					<Animation
-						ref={animation => {
-							this.animation = animation;
-						}}
-						style={{
-							// flex: 1,
-							height: 100,
-							width: 100,
-
-							padding: 0,
-							margin: 0,
-						}}
-
-						loop={true}
-						// style={{ }}
-						source={anim}
-					/>
-				</View>
-
-				<Button block>
-					<Text>Light</Text>
-				</Button>
-			</View>
+					<Text>{this.props.session.latestSession}</Text>
+				</Body>
+			</Container>
 		);
 	}
 
 	componentDidMount() {
-		this.animation.play();
-	}
-
-	componentWillMount() {
 		const subscription = this.bleManager.onStateChange((state) => {
 			if (state === 'PoweredOn') {
 				this.scanAndConnect();
@@ -128,33 +117,28 @@ export default class HomeScreen extends Component {
 
 	@autobind
 	upload() {
+		console.log(this.props.session);
+
 		this.props.dispatch({type: 'POST_SESSIONS'});
 	}
 
 	@autobind
 	async sync() {
 		console.log(this.state.device);
+
 		if (this.state.device) {
+			this.setState({isSyncing: true});
+
 			const dateTime = Date.now();
 			const timestamp = Math.floor(dateTime / 1000);
 
+			// await device.writeCharacteristicWithResponseForService(UUID.client.uuid, UUID.client.timestamp, btoa(timestamp));
+
 			let device: Device = this.state.device;
-
-			await device.writeCharacteristicWithResponseForService(UUID.client.uuid, UUID.client.timestamp, btoa(timestamp));
-
-			// Get latest synced session id
-			// const max = Math.max.apply(Math, this.state.session.map(function (o) {
-			// 	return o.key;
-			// }));
-
-			let max: Base64 = btoa("-1");
-
-			await device.writeCharacteristicWithResponseForService(UUID.client.uuid, UUID.client.sync, max);
+			const latested = btoa(this.props.session.latestSession);
+			await device.writeCharacteristicWithResponseForService(UUID.client.uuid, UUID.client.sync, latested);
 
 			let sub = device.monitorCharacteristicForService(UUID.sensors.uuid, UUID.sensors.info, (error: ?Error, characteristic: ?Characteristic) => {
-				// console.log(error);
-				// console.log(characteristic);
-				console.log(atob(characteristic.value));
 				// console.log(atob(characteristic.value));
 
 				if (atob(characteristic.value) === "==TRANSMISSION_END==") {
@@ -172,15 +156,27 @@ export default class HomeScreen extends Component {
 				let gyro = device.readCharacteristicForService(UUID.sensors.uuid, UUID.sensors.gyro);
 				let mag = device.readCharacteristicForService(UUID.sensors.uuid, UUID.sensors.mag);
 
-				Promise.all([acc, baro, gyro, mag]).then((characteristics) => {
-					if (characteristics[0].value === null) {
+				let promise = this.state.device.writeCharacteristicWithResponseForService(UUID.sensors.uuid, UUID.sensors.bus, btoa("next"));
+
+				// this.state.device.writeCharacteristicWithoutResponseForService("9036ca89-2ad3-46f0-a9c1-7b6811fe2bd0", "9036ca89-2ad3-46f0-a9c1-7b6811fe2bd5", btoa("next")).then((device2) => {
+				// 	console.log(device2);
+				// }).catch((e) => {
+				// 	console.log(e);
+				// });
+
+				Promise.all([acc, baro, gyro, mag, promise]).then((promises) => {
+					if (promises[0].value === null) {
 						return;
 					}
 
-					let acc = atob(characteristics[0].value).split(",");
-					let baro = atob(characteristics[1].value).split(",");
-					let gyro = atob(characteristics[2].value).split(",");
-					let mag = atob(characteristics[3].value).split(",");
+					let acc = atob(promises[0].value).split(",");
+					let baro = atob(promises[1].value).split(",");
+					let gyro = atob(promises[2].value).split(",");
+					let mag = atob(promises[3].value).split(",");
+
+					if (acc[2] == null) {
+						console.error(promises);
+					}
 
 					const data = {
 						// ....data,
@@ -204,11 +200,16 @@ export default class HomeScreen extends Component {
 						timestamp: info[1],
 					};
 
+
+
 					// console.log(session);
 
+
+					this.setState({logNumber: sessionId});
 					this.props.dispatch({type: 'ADD_SESSION', data: data, sessionId: sessionId});
 
 				}).catch((error) => {
+					// this.setState({isSyncing: false});
 					console.log(error);
 				});
 			});
@@ -229,16 +230,14 @@ export default class HomeScreen extends Component {
 
 				device.connect()
 					.then((device) => {
-						this.state.device = device;
-
 						console.log("Discovering services and characteristics");
+
+						this.setState({device: device});
 						return device.discoverAllServicesAndCharacteristics();
 					})
 					.then((device) => {
 						console.log("Setting notifications");
-						console.log(device);
-
-						return this.setupInteractiveMode(device)
+						return this.initialSync()
 					})
 					.then(() => {
 						console.log("Listening...");
@@ -255,65 +254,28 @@ export default class HomeScreen extends Component {
 	}
 
 	@autobind
-	async setupInteractiveMode(device: Device) {
-		const time = Number(new Date());
+	async initialSync() {
+		//Update device time
+		const timestamp = Math.floor(Date.now() / 1000);
+		// await this.state.device.writeCharacteristicWithResponseForService("9036ca89-2ad3-46f0-a9c1-7b6811fe2fd0", "9036ca89-2ad3-46f0-a9c1-7b6811fe2fd2", btoa(timestamp));
+		await this.state.device.writeCharacteristicWithResponseForService(UUID.client.uuid, UUID.client.timestamp, btoa(timestamp));
 
-		const dateTime = Date.now();
-		const timestamp = Math.floor(dateTime / 1000);
 
-		console.log(time);
-		console.log(timestamp);
-		console.log(btoa(timestamp));
+		//Moved
+		// // console.log(s)
+		// const latested = this.props.session.latestSession;
+		// console.log(latested);
+		// // await this.state.device.writeCharacteristicWithResponseForService(UUID.CLIENT.CLIENT_SERVICE_UUID, UUID.CLIENT.CLIENT_TIMESTAMP_UUID, btoa(latested));
+		// await this.state.device.writeCharacteristicWithResponseForService("9036ca89-2ad3-46f0-a9c1-7b6811fe2fd0", "9036ca89-2ad3-46f0-a9c1-7b6811fe2fd1", btoa(latested));
 
-		await device.writeCharacteristicWithResponseForService("9036ca89-2ad3-46f0-a9c1-7b6811fe2fd0", "9036ca89-2ad3-46f0-a9c1-7b6811fe2fd2", btoa(timestamp));
-		// const char = await device.readCharacteristicForService("9036ca89-2ad3-46f0-a9c1-7b6811fe2bd0", "9036ca89-2ad3-46f0-a9c1-7b6811fe2bd5");
-		console.log(this.state.baseUUID + "5");
-
-		// const service = this.state.baseUUID + "0";
-		// const monitor = device.monitorCharacteristicForService(service, this.state.baseUUID + "5", async (error: ?Error, characteristic: ?Characteristic) => {
-		// 	console.log(error);
-		// 	console.log(characteristic);
-		// 	for (const i in this.state.char) {
-		// 		const uiidSufix = 1 + parseInt(i, 10);
-		// 		console.log(uiidSufix);
-		// 		console.log(i);
-		// 		await device.readCharacteristicForService(service, this.state.baseUUID + uiidSufix).then((char: Characteristic) => {
-		// 			// this.state.char[i] = atob(char.value);
-		// 			var state = this.state.char;
-		// 			state[i] = atob(char.value);
-		// 			this.setState({...this.state, char: state});
-		// 			console.log(this.state.char);
-		// 		}).catch((error) => {
-		// 			console.log(error);
-		// 		});
-		// 		// device.
-		// 		// device.readCharacteristicForService("9036ca89-2ad3-46f0-a9c1-7b6811fe2bd0", "9036ca89-2ad3-46f0-a9c1-7b6811fe2bd5").then((Characteristic) => {
-		// 		// 	console.log(characteristic);
-		// 		// });
-		// 	}
-		// });
-
+		this.setState({isReady: true});
 	}
 }
-
-// const mapStateToProps = (state) => {
-// 	return {
-// 		navigationState: state.Home
-// 	}
-// };
-
-// export default connect(mapStateToProps)(HomeScreen)
 
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
-		// backgroundColor: '#F5FCFF',
-	},
-	// status: {
-	// 	fontSize: 16,
-	// 	textAlign: 'center',
-	// 	margin: 10,
-	// },
+	}
 });

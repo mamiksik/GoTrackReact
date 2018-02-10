@@ -1,6 +1,5 @@
 import request from 'superagent'
-import {Utils} from "../Utils";
-import {AuthState} from "../reducers/AuthReducer";
+import {Utils} from "../Utils/Utils";
 import {TrackData} from "../reducers/SessionReducer";
 
 export const sessionService = store => next => action => {

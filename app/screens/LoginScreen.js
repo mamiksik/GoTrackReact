@@ -5,13 +5,21 @@ import {Linking} from "react-native";
 import {connect} from "react-redux";
 import CookieManager from "react-native-cookies";
 import autobind from "autobind-decorator"
+import {withNavigation} from "react-navigation";
+import NavigationActions from "react-navigation/src/NavigationActions";
 
 @connect((state) => {
 	return {
 		auth: state.auth,
 	};
 })
+@withNavigation
 export default class LoginScreen extends Component {
+
+	static navigationOptions = {
+		tabBarLabel: 'Login',
+		title: 'Login',
+	};
 
 	constructor(props) {
 		super(props);
@@ -26,11 +34,16 @@ export default class LoginScreen extends Component {
 			});
 	}
 
-	static navigationOptions = {
-		tabBarLabel: 'Login',
-		title: 'Login',
-	};
-
+	// componentDidUpdate(){
+	componentDidMount(){
+		// if (this.props.auth.isLoggedIn) {
+			const resetAction = NavigationActions.reset({
+				index: 0,
+				actions: [NavigationActions.navigate({routeName: 'Tabs'})],
+			});
+			this.props.navigation.dispatch(resetAction);
+		// }
+	}
 
 	render() {
 		return (

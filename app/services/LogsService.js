@@ -1,5 +1,5 @@
 import request from 'superagent'
-import {Utils} from "../Utils";
+import {Utils} from "../Utils/Utils";
 
 export const logsService = store => next => action => {
 	next(action);

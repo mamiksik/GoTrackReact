@@ -1,5 +1,5 @@
 import {Store} from 'redux'
-import {AuthState} from "./reducers/AuthReducer";
+import {AuthState} from "../reducers/AuthReducer";
 
 
 export class Utils {

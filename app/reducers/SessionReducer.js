@@ -40,7 +40,11 @@ export interface TrackData {
 // 	sessionId: { TrackData }
 // }
 
-const initState/*: { sessionId: [] }*/ = {};
+const initState = {
+	latestSession: 0,
+	latestUpdate: Date.now(),
+	sessions: []
+};
 
 export const sessionReducer = (state = initState, action) => {
 	// console.log(state);
@@ -49,22 +53,19 @@ export const sessionReducer = (state = initState, action) => {
 	switch (type) {
 		case 'ADD_SESSION':
 
-			// const data = state.reduce((previousValue, currentValue, currentIndex, array) => {
-			// 	if (currentValue.sessionId === action.data.sessionId) {
-			// 		currentValue.data = [...currentValue.data, action.data.data]
-			// 	}
-			// }, null);
-
 			let newState = {...state};
-			if (state.hasOwnProperty(sessionId)) {
+			if (state.sessions.hasOwnProperty(sessionId)) {
 				// newState[sessionId] = {}
-				newState[sessionId].data = [...state[sessionId].data, data];
+				newState.sessions[sessionId].data = [...state.sessions[sessionId].data, data];
 			} else {
-				newState[sessionId] = {
+				newState.sessions[sessionId] = {
 					sessionId: sessionId,
 					data: [data]
 				};
+			}
 
+			if (sessionId > state.latestSession){
+				newState.latestSession = sessionId;
 			}
 
 			return newState;

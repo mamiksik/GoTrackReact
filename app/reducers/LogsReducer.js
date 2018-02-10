@@ -16,6 +16,16 @@ export const logsReducer = (state = initState, action) => {
 			console.log("RECIVED");
 			console.log(action);
 			return action.data;
+
+		case 'GET_LOGS_FLAT':
+			let values = [];
+			for(let key in state.logs) {
+				if(state.hasOwnProperty(key)) {
+					values.push(state[key]);
+				}
+			}
+
+			return values;
 		default:
 			return state;
 
