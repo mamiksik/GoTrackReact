@@ -3,6 +3,8 @@ package com.gotrackreact;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.beefe.picker.PickerViewPackage;
+import com.lwansbrough.RCTCamera.RCTCameraPackage;
 import com.reactnative.photoview.PhotoViewPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.airbnb.android.react.lottie.LottiePackage;
@@ -29,6 +31,8 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new PickerViewPackage(),
+            new RCTCameraPackage(),
             new PhotoViewPackage(),
             new LinearGradientPackage(),
             new LottiePackage(),

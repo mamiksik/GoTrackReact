@@ -15,16 +15,19 @@ import {loginService} from "./services/AuthService";
 import {logsService} from "./services/LogsService";
 import {sessionService} from "./services/SessionService";
 
+import { reducer as formReducer } from 'redux-form';
+
 const appReducer = combineReducers({
 	auth: authReducer,
 	logs: logsReducer,
 	session: sessionReducer,
+	form: formReducer,
 });
 
 const persistConfig = {
 	key: 'root',
 	storage: storage,
-	blacklist: ['session']
+	blacklist: ['session',]
 };
 const persistedReducer = persistReducer(persistConfig, appReducer);
 

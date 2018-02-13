@@ -6,28 +6,14 @@ import HomeScreen from "./screens/HomeScreen";
 import LogsScreen from "./screens/Logs/LogsScreen";
 import AddLogScreen from "./screens/Logs/AddLogScreen";
 import EditLogScreen from "./screens/Logs/EditLogScreen";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
-// const TabsComponent = props => (
-// 	<View style={{ flex: 1, backgroundColor: '#43484d' }}>
-// 		<View
-// 			style={{ marginTop: 40, justifyContent: 'center', alignItems: 'center' }}
-// 		>
-// 			<Image
-// 				source={require('./src/images/logo.png')}
-// 				style={{ width: SCREEN_WIDTH * 0.57 }}
-// 				resizeMode="contain"
-// 			/>
-// 		</View>
-// 		<View style={{marginLeft: 10}}>
-// 			<DrawerItems {...props} />
-// 		</View>
-// 	</View>
-// );
-
+// import QRCodeScanner from 'react-native-qrcode-scanner';
 
 const Logs = StackNavigator({
 	Logs: {screen: LogsScreen},
 	AddLog: {screen: AddLogScreen},
+	// QrView: {screen: QRCodeScanner},
 	EditLog: {screen: EditLogScreen},
 }, {
 	// headerMode: 'none',
@@ -37,8 +23,18 @@ const Logs = StackNavigator({
 
 const Tabs = TabNavigator({
 	Home: {screen: HomeScreen},
+	Logs: {
+		screen: Logs,
+		title: "Logs",
+		tabBarIcon: ({tintColor, focused}) => (
+			<Ionicons
+				name={focused ? 'ios-clipboard' : 'ios-clipboard-outline'}
+				size={26}
+				style={{color: tintColor}}
+			/>
+		),
+	},
 	Setting: {screen: SettingsScreen},
-	Logs: {screen: Logs},
 }, {
 	initialRouteName: 'Home'
 	// contentComponent: TabsComponent

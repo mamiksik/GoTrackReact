@@ -10,9 +10,16 @@ export const loginService = store => next => action => {
 
 			let instance = axios.create({
 				withCredentials: true,
-				credentials: 'include',
+				// credentials: 'include',
 
 			});
+
+			// instance.get('https://facebook.github.io/react-native/movies.json').then(function(response) {
+			// 	console.log(response);
+			// }).catch(function(error) {
+			// 	// alert(error)
+			// 	console.warn(error)
+			// });
 
 			instance.get(tokenURL).then((response) => {
 				next({

@@ -11,7 +11,7 @@ import autobind from "autobind-decorator"
 import type {Session, TrackData} from "../reducers/SessionReducer";
 import type {Base64} from "react-native-ble-plx/src/TypeDefinition";
 
-import {Container, Header, Content, Text, Button, Body} from 'native-base';
+import {Container, Header, Content, Text, Button, Body, Title, H1} from 'native-base';
 // import Container, Header, Content, Button, Text from 'native-base';
 
 // import { Button } from 'native-base';
@@ -44,7 +44,14 @@ const UUID = {
 })
 export default class HomeScreen extends Component {
 	static navigationOptions = {
-		title: 'Home',
+		title: 'Sync',
+		tabBarIcon: ({tintColor, focused}) => (
+			<Ionicons
+				name={focused ? 'ios-infinite' : 'ios-infinite-outline'}
+				size={26}
+				style={{color: tintColor}}
+			/>
+		),
 	};
 
 	constructor(props) {
@@ -82,25 +89,29 @@ export default class HomeScreen extends Component {
 				state = "Now you can sync device";
 			}
 
-			if (this.state.isReady){
-				button = <Button block onPress={this.sync}><Text>Sync</Text></Button>
+			if (this.state.isReady) {
+				button = <Button block onPress={this.sync} style={styles.space}><Text>Sync</Text></Button>
 			}
 
 		} else {
 			state = "Syncing! " + this.state.logNumber;
 		}
 
-
+		const session =  this.props.session.latestSession > 0 ?   <Text style={styles.space}>{this.props.session.latestSession}</Text> : null;
 
 		return (
-			<Container>
-				<Header title="Home"></Header>
-				<Body>
-					<Text>{state}</Text>
+			<Container style={styles.container}>
+				<Header>
+					<Body>
+					<Title>Sync</Title>
+					</Body>
+				</Header>
+				<Body style={styles.body}>
+					<H1>{state}</H1>
 					{button}
-					<Button block onPress={this.upload}><Text>Upload</Text></Button>
+					<Button  block bordered dark onPress={this.upload} style={styles.space}><Text>Upload</Text></Button>
 
-					<Text>{this.props.session.latestSession}</Text>
+					{session}
 				</Body>
 			</Container>
 		);
@@ -152,11 +163,11 @@ export default class HomeScreen extends Component {
 				const sessionId = info[0];
 
 				let acc = device.readCharacteristicForService(UUID.sensors.uuid, UUID.sensors.acc);
-				let baro = device.readCharacteristicForService(UUID.sensors.uuid, UUID.sensors.baro);
-				let gyro = device.readCharacteristicForService(UUID.sensors.uuid, UUID.sensors.gyro);
-				let mag = device.readCharacteristicForService(UUID.sensors.uuid, UUID.sensors.mag);
+				// let baro = device.readCharacteristicForService(UUID.sensors.uuid, UUID.sensors.baro);
+				// let gyro = device.readCharacteristicForService(UUID.sensors.uuid, UUID.sensors.gyro);
+				// let mag = device.readCharacteristicForService(UUID.sensors.uuid, UUID.sensors.mag);
 
-				let promise = this.state.device.writeCharacteristicWithResponseForService(UUID.sensors.uuid, UUID.sensors.bus, btoa("next"));
+				// let promise = this.state.device.writeCharacteristicWithResponseForService(UUID.sensors.uuid, UUID.sensors.bus, btoa("next"));
 
 				// this.state.device.writeCharacteristicWithoutResponseForService("9036ca89-2ad3-46f0-a9c1-7b6811fe2bd0", "9036ca89-2ad3-46f0-a9c1-7b6811fe2bd5", btoa("next")).then((device2) => {
 				// 	console.log(device2);
@@ -164,45 +175,56 @@ export default class HomeScreen extends Component {
 				// 	console.log(e);
 				// });
 
-				Promise.all([acc, baro, gyro, mag, promise]).then((promises) => {
-					if (promises[0].value === null) {
-						return;
-					}
+				Promise.all([acc/*, baro, gyro, mag*/]).then((promises) => {
 
-					let acc = atob(promises[0].value).split(",");
-					let baro = atob(promises[1].value).split(",");
-					let gyro = atob(promises[2].value).split(",");
-					let mag = atob(promises[3].value).split(",");
+					console.log(acc);
 
-					if (acc[2] == null) {
-						console.error(promises);
-					}
+					const next = btoa("next");
+					// const next = "qwertyuiopasdfghjklzxcvbnm1234567890qwertyuiopasdfghjklzxcvbnm1234567890qwertyuiopasdfghjklzxcvbnm1234567890qwertyuiopasdfghjklzxcvbnm1234567890qwertyuioasdfghjklzxcvbnm";
+					this.state.device.writeCharacteristicWithResponseForService(UUID.sensors.uuid, UUID.sensors.bus, btoa(next)).then((char) => {
+						if (promises[0].value === null) {
+							return;
+						}
 
-					const data = {
-						// ....data,
-						accelerometerX: acc[0],
-						accelerometerY: acc[1],
-						accelerometerZ: acc[2],
-						// accelerometerO: acc[2],
+						let acc = atob(promises[0].value).split(",");
+						let baro = atob(promises[1].value).split(",");
+						let gyro = atob(promises[2].value).split(",");
+						let mag = atob(promises[3].value).split(",");
 
-						gyroscopeX: gyro[0],
-						gyroscopeY: gyro[1],
-						gyroscopeZ: gyro[2],
+						if (acc[2] == null) {
+							console.error(promises);
+						}
 
-						magnetometerX: mag[0],
-						magnetometerY: mag[1],
-						magnetometerZ: mag[2],
+						const data = {
+							// ....data,
+							accelerometerX: acc[0],
+							accelerometerY: acc[1],
+							accelerometerZ: acc[2],
+							// accelerometerO: acc[2],
+
+							gyroscopeX: gyro[0],
+							gyroscopeY: gyro[1],
+							gyroscopeZ: gyro[2],
+
+							magnetometerX: mag[0],
+							magnetometerY: mag[1],
+							magnetometerZ: mag[2],
 
 
-						pressure: baro[0],
-						temperature: baro[1],
+							pressure: baro[0],
+							temperature: baro[1],
 
-						timestamp: info[1],
-					};
+							timestamp: info[1],
+						};
 
-					this.setState({logNumber: sessionId});
-					this.props.dispatch({type: 'ADD_SESSION', data: data, sessionId: sessionId});
+						console.log(data);
+						this.setState({logNumber: sessionId});
+						this.props.dispatch({type: 'ADD_SESSION', data: data, sessionId: sessionId});
 
+					}).catch((error) => {
+						this.setState({isSyncing: false});
+						console.log(error);
+					});
 				}).catch((error) => {
 					this.setState({isSyncing: false});
 					console.log(error);
@@ -268,9 +290,17 @@ export default class HomeScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-	container: {
+	// container: {
+	//
+	// },
+	body: {
 		flex: 1,
+		flexDirection: 'column',
 		justifyContent: 'center',
 		alignItems: 'center',
-	}
+	},
+
+	space:{
+		marginTop: 30,
+	},
 });

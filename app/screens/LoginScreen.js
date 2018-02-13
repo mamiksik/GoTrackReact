@@ -23,25 +23,26 @@ export default class LoginScreen extends Component {
 
 	constructor(props) {
 		super(props);
-		console.log(props);
-		console.log(this.props);
-		console.log(this.state);
+		// console.log(props);
+		// console.log(this.props);
+		// console.log(this.state);
 		this.login.bind(this);
 
-		CookieManager.clearAll()
-			.then((res) => {
-				console.log('CookieManager.clearAll =>', res);
-			});
+		// CookieManager.clearAll()
+		// 	.then((res) => {
+		// 		console.log('CookieManager.clearAll =>', res);
+		// 	});
 	}
 
-	// componentDidUpdate(){
-	componentDidMount(){
+	componentDidUpdate(){
+	// componentDidMount(){
+	// 	console.log(this.props.auth.isLoggedIn);
 		// if (this.props.auth.isLoggedIn) {
-			const resetAction = NavigationActions.reset({
-				index: 0,
-				actions: [NavigationActions.navigate({routeName: 'Tabs'})],
-			});
-			this.props.navigation.dispatch(resetAction);
+		// 	const resetAction = NavigationActions.reset({
+		// 		index: 0,
+		// 		actions: [NavigationActions.navigate({routeName: 'Tabs'})],
+		// 	});
+		// 	this.props.navigation.dispatch(resetAction);
 		// }
 	}
 
@@ -49,11 +50,12 @@ export default class LoginScreen extends Component {
 		return (
 			<WebView
 				ref={'webview'}
-				javaScriptEnabled={true}
+				// javaScriptEnabled={true}
 				onNavigationStateChange={this.login}
 				startInLoadingState={true}
 				scalesPageToFit={true}
 				source={{uri: this.props.auth.authURL}}
+				onMessage={this.onMessage}
 			/>
 
 
@@ -61,8 +63,16 @@ export default class LoginScreen extends Component {
 	};
 
 	@autobind
+	onMessage(event){
+		// console.log(event.nativeEvent);
+		// console.log(JSON.parse(event.nativeEvent.data));
+		// console.log(event.nativeEvent.data.toString());
+		this.props.dispatch({type: 'INJECT_USER', data: JSON.parse(event.nativeEvent.data)});
+	}
+
+	@autobind
 	login(webViewState) {
-		console.log(webViewState);
+	/*	console.log(webViewState);
 		if (!webViewState) {
 			return;
 		}
@@ -79,6 +89,6 @@ export default class LoginScreen extends Component {
 		if (urlParams.loginToken) {
 			this.props.dispatch({type: 'SET_LOGIN_TOKEN', data: urlParams.loginToken});
 			this.props.dispatch({type: 'GET_REST_TOKEN'});
-		}
+		}*/
 	}
 }

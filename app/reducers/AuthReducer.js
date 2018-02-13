@@ -8,6 +8,15 @@ export interface AuthState {
 	authUrl: string,
 }
 
+// const initAuthState: AuthState = {
+// 	isLoggedIn: true,
+// 	restToken: "elowznx7adncglm899oamtuj34u2j1yt",
+// 	loginToken: "",
+// 	apiUrl: "http://martin.local/GoClimb/www/api/en/v1/",
+// 	tokenURL: "http://martin.local/GoClimb/www/gotrack/en",
+// 	authURL: "http://martin.local/GoClimb/www/auth/cs/go_track/login?back=http%3A%2F%2Fmartin.local%2FGoClimb%2Fwww%2Fgotrack%2Fcs%2F%3FloginToken%3D__TOKEN__",
+// };
+
 const initAuthState: AuthState = {
 	isLoggedIn: false,
 	restToken: "",
@@ -15,10 +24,33 @@ const initAuthState: AuthState = {
 	apiUrl: "",
 	tokenURL: "http://martin.local/GoClimb/www/gotrack/en",
 	authURL: "http://martin.local/GoClimb/www/auth/cs/go_track/login?back=http%3A%2F%2Fmartin.local%2FGoClimb%2Fwww%2Fgotrack%2Fcs%2F%3FloginToken%3D__TOKEN__",
+	user: {
+
+	}
 };
 
+
 export const authReducer = (state = initAuthState, action) => {
+	console.log(action);
 	switch (action.type) {
+		case 'LOG_OUT_USER': {
+			return {
+				...state,
+				isLoggedIn: false,
+				restToken: null,
+				apiUrl: null,
+				user: {},
+			};
+		}
+		case 'INJECT_USER': {
+			return {
+				...state,
+				isLoggedIn: true,
+				restToken: action.data.restToken,
+				apiUrl: action.data.apiUrl,
+				user: action.data.user,
+			};
+		}
 		case 'SET_LOGIN_TOKEN': {
 			return {
 				...state,
